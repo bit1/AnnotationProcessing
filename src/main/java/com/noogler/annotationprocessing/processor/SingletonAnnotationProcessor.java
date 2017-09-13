@@ -37,6 +37,7 @@ public class SingletonAnnotationProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         try {
             // Scan classes to get ones annotated with @Singleton
+            // TODO: Dont hardcode Singleton.class here
             for (Element annotatedElement : roundEnv.getElementsAnnotatedWith(Singleton.class)) {
                 if (annotatedElement.getKind() != ElementKind.CLASS) {
                     throw new ProcessingException(annotatedElement, "Only classes can be annotated with @Singleton");
@@ -69,13 +70,13 @@ public class SingletonAnnotationProcessor extends AbstractProcessor {
                     "Classes annotated with @Singleton cannot be abstract", typeElement.getQualifiedName().toString());
         }
 
-        // Check if an public zero args constructor is present
+        // Check if a public zero args constructor is present
         for (Element enclosed: typeElement.getEnclosedElements()) {
             if (enclosed.getKind() == ElementKind.CONSTRUCTOR) {
                 ExecutableElement constructorElement = (ExecutableElement) enclosed;
                 if (!(constructorElement.getParameters().size() == 0 &&
                         constructorElement.getModifiers().contains(Modifier.PUBLIC))) {
-                    throw new ProcessingException(typeElement, "The class %s must provide a public constructor with" +
+                    throw new ProcessingException(typeElement, "The class %s must provide a public constructor with " +
                             "zero args", typeElement.getQualifiedName().toString());
                 }
             }
